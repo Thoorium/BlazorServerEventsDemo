@@ -1,0 +1,34 @@
+@page "/counter"
+@inject BlazorServerEventsDemo.Services.DummyCounterService _DummyCounterService
+
+<h1>Counter</h1>
+<p>Open in multiple tabs and click Increment (or Reset).</p>
+<p>Current count: <b>@currentCount</b></p>
+
+<button class="btn btn-primary" onclick="@IncrementCount">Increment</button>
+<button class="btn" onclick="@ResetCount">Reset</button>
+
+@functions {
+    int currentCount = 0;
+
+    protected override void OnInit()
+    {
+        currentCount = _DummyCounterService.Number;
+        
+        _DummyCounterService.NumberUpdatedEvent += (sender, args) => {
+            currentCount = args.Number;
+            // Notify the "UI" to refresh
+            this.Invoke(() => this.StateHasChanged());
+        };
+    }
+
+    void IncrementCount()
+    {
+        _DummyCounterService.Increment();
+    }
+
+    void ResetCount()
+    {
+        _DummyCounterService.Reset();
+    }
+}

@@ -1,0 +1,28 @@
+@page "/numbers"
+@inject BlazorServerEventsDemo.Services.DummyNumberService _DummyNumberService
+
+<h1>Numbers</h1>
+<p>The number automatically increments every 5 seconds using a <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services" target="_blank">hosted scheduled task</a> running on the server.</p>
+<p>Current number: <b>@currentNumber</b></p>
+
+<button class="btn btn-primary" onclick="@RefreshNumber">Force refresh</button>
+
+@functions {
+    int currentNumber = 0;
+
+    protected override void OnInit()
+    {
+        currentNumber = _DummyNumberService.Number;
+        
+        _DummyNumberService.NewNumberEvent += (sender, args) => {
+            currentNumber = args.Number;
+            // Notify the "UI" to refresh
+            this.Invoke(() => this.StateHasChanged());
+        };
+    }
+
+    void RefreshNumber()
+    {
+        currentNumber = _DummyNumberService.Number;
+    }
+}
